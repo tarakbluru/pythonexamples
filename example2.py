@@ -26,7 +26,25 @@
 # *******************************************************************************
 # 
 #!/usr/bin/python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import get_quote
 
-data=get_quote.get_quote("NTPC.NS",'1/1/2010', '18/3/2017')
-data['Close'].plot(grid=True, figsize=(8, 5))
+data=get_quote.get_quote("ITC.NS",'1/1/2010', '18/3/2017')
+#data['Close'].plot(grid=True, figsize=(8, 5))
+
+data['42d'] = np.round(pd.rolling_mean(data['Close'], window=42), 2)
+data['252d'] = np.round(pd.rolling_mean(data['Close'], window=252), 2)
+data[['Close', '42d', '252d']].tail()
+#data[['Close', '42d', '252d']].plot(grid=True, figsize=(8, 5))
+
+data['42-252'] = data['42d'] - data['252d']
+data['42-252'].tail()
+SD = 10
+data['Regime'] = np.where(data['42-252'] > SD, 1, 0)
+data['Regime'] = np.where(data['42-252'] < -SD, -1, data['Regime'])
+data['Regime'].value_counts()
+
+data['Regime'].plot(lw=1.5)
+plt.ylim([-1.1, 1.1])
