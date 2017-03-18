@@ -48,3 +48,5 @@ data['Regime'].value_counts()
 
 data['Regime'].plot(lw=1.5)
 plt.ylim([-1.1, 1.1])
+
+
