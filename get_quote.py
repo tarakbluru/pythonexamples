@@ -25,14 +25,23 @@
 # Note: Date in DD/MM/YEAR format
 # *******************************************************************************
 # 
-
+#!/usr/bin/python
+import time
+from datetime import date, timedelta
 import pandas_datareader.data as web
 
 def get_quote (symbol="INFY.NS", start='1/1/2017', end='2/1/2017', server='yahoo') :
     ohlcdata = web.DataReader (symbol, server, start, end)
-    ohlcdata.info()
+    return ohlcdata;
+
+def get_today_quote (symbol="INFY.NS", server='yahoo') :
+    stoday = time.strftime("%d/%m/%Y")
+    yesterday = date.today() - timedelta(1)
+    syesterday = yesterday.strftime('%m%d%y')
+    ohlcdata = get_quote (symbol, syesterday, stoday, server)
     return ohlcdata;
 
 data = get_quote ("NTPC.NS", '1/1/2017', '17/3/2017', 'yahoo')
-data.info()
+tdata = get_today_quote("NTPC.NS", 'yahoo')
+tdata.info()
 
