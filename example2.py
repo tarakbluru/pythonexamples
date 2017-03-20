@@ -28,34 +28,68 @@
 #!/usr/bin/python
 import numpy as np
 import pandas as pd
+import matplotlib
+
 import matplotlib.pyplot as plt
 import get_quote
 
-data=get_quote.get_quote("^NSEI",'1/1/2005', '18/3/2017')
-#data=get_quote.get_quote("INFY.NS",'1/1/2010', '18/3/2017')
-
-#data['Close'].plot(grid=True, figsize=(8, 5))
-
-data['42d'] = np.round(pd.rolling_mean(data['Close'], window=42), 2)
-data['252d'] = np.round(pd.rolling_mean(data['Close'], window=252), 2)
-data[['Close', '42d', '252d']].tail()
-#data[['Close', '42d', '252d']].plot(grid=True, figsize=(8, 5))
-
-data['42-252'] = data['42d'] - data['252d']
-data['42-252'].tail()
-SD = 20
-data['Regime'] = np.where(data['42-252'] > SD, 1, 0)
-data['Regime'] = np.where(data['42-252'] < -SD, -1, data['Regime'])
-data['Regime'].value_counts()
-
-#data['Regime'].plot(lw=1.5)
-#plt.ylim([-1.1, 1.1])
-
-data['Market'] = np.log(data['Close'] / data['Close'].shift(1))
-data['Strategy'] = data['Regime'].shift(1) * data['Market']
-data[['Market', 'Strategy']].cumsum().apply(np.exp).plot(grid=True,figsize=(8, 5))
+plt.ion()
 
 
+def process_symbol (line) :
+    #data=get_quote.get_quote("AUROPHARMA.NS",'1/1/2005', '18/3/2017')
+    #data=get_quote.get_quote("INFY.NS",'1/1/2010', '18/3/2017')
+    #data=get_quote.get_quote("GOLDBEES.NS",'1/1/2005', '18/3/2017')
+    data=get_quote.get_quote(line,'1/1/2005', '18/3/2017')
+    
+    #data['Close'].plot(grid=True, figsize=(8, 5))
+    
+    data['42d'] = np.round(pd.rolling_mean(data['Close'], window=42), 2)
+    data['252d'] = np.round(pd.rolling_mean(data['Close'], window=252), 2)
+    data[['Close', '42d', '252d']].tail()
+    #data[['Close', '42d', '252d']].plot(grid=True, figsize=(8, 5))
+    
+    data['42-252'] = data['42d'] - data['252d']
+    data['42-252'].tail()
+    SD = 20
+    data['Regime'] = np.where(data['42-252'] > SD, 1, 0)
+    data['Regime'] = np.where(data['42-252'] < -SD, -1, data['Regime'])
+    data['Regime'].value_counts()
 
+    figura = plt.figure(1)    
+    data['Regime'].plot(lw=1.5)
+    plt.ylim([-1.1, 1.1])
+    plt.xlim(['1/1/2005', '1/12/2018'])
+#    while True:
+#        if plt.waitforbuttonpress():
+#            break
+    while True:
+       if plt.waitforbuttonpress():
+            break  
+    plt.close(figura)
+    #==============================================================================
+    # data['Market'] = np.log(data['Close'] / data['Close'].shift(1))
+    # data['Strategy'] = data['Regime'].shift(1) * data['Market']
+    # data[['Market', 'Strategy']].cumsum().apply(np.exp).plot(grid=True,figsize=(8, 5))
+    #==============================================================================
+    return
+
+skip = True
+
+with open('nifty_50.txt') as f:
+    for line in f:
+        print "Read..", line
+        if ('#' in line) :
+            continue
+        line = line.rstrip('\n')
+        if line == "MARICO" :
+            skip = False
+        if skip :
+            print "skipping ", line, "\n"
+            continue
+        line += ".NS"
+        print "Processing", line
+        process_symbol (line)
+        
 
 
