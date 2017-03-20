@@ -60,13 +60,15 @@ def process_symbol (line) :
     data['Regime'].plot(lw=1.5)
     plt.ylim([-1.1, 1.1])
     plt.xlim(['1/1/2005', '1/12/2018'])
-#    while True:
+
+#==============================================================================
+#     while True:
 #        if plt.waitforbuttonpress():
-#            break
-    while True:
-       if plt.waitforbuttonpress():
-            break  
-    plt.close(figura)
+#             break  
+#     plt.close(figura)
+#==============================================================================
+
+# Use the below code to check for performance
     #==============================================================================
     # data['Market'] = np.log(data['Close'] / data['Close'].shift(1))
     # data['Strategy'] = data['Regime'].shift(1) * data['Market']
